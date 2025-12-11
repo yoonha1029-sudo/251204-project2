@@ -4,6 +4,7 @@ import PeriodicTable from './components/PeriodicTable'
 import ElementCard from './components/ElementCard'
 import ChatbotPanel from './components/ChatbotPanel'
 import InquiryForm from './components/InquiryForm'
+import BasicConceptsPanel from './components/BasicConceptsPanel'
 
 const SYSTEM_PROMPT =
   '너는 장윤하 선생님을 도와 대한민국 중학교 2학년 과학 수업을 지원하는 보조 교사야. 답변은 항상 2~4문장으로 간단하고 쉬운 표현만 사용해. 전자배치, 오비탈, 이온화에너지 같은 어려운 용어를 사용해 설명하지는 마. 과학과 관련 없는 질문이 오면 “이 챗봇은 과학 탐구만 도와줄 수 있어요.”라고 안내해.'
@@ -23,6 +24,10 @@ const googleFormFieldIds = {
 
 export default function App() {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY || ''
+  const [showMore, setShowMore] = useState(false)
+  const [colorOn, setColorOn] = useState(false)
+  const [visualizeBy, setVisualizeBy] = useState('')
+  const [showConcepts, setShowConcepts] = useState(false)
 
   const [selectedElementId, setSelectedElementId] = useState(elements[0].atomicNumber)
   const selectedElement = useMemo(
@@ -36,7 +41,7 @@ export default function App() {
     [inquiryElementId]
   )
 
-  const initialChats = React.useMemo(() => {
+  const initialChats = useMemo(() => {
     try {
       const saved = localStorage.getItem('chatHistory')
       if (saved) {
@@ -170,6 +175,24 @@ export default function App() {
       })
   }
 
+  const handleTableAction = (value, payload) => {
+    if (value === 'toggle-color') {
+      setColorOn(payload)
+      return
+    }
+    if (value === 'visualize') {
+      setVisualizeBy(payload)
+      return
+    }
+    if (value === 'toggle-more') {
+      setShowMore((prev) => !prev)
+      return
+    }
+    if (typeof value === 'number') {
+      setSelectedElementId(value)
+    }
+  }
+
   return (
     <div className="page">
       <header className="topbar">
@@ -185,8 +208,20 @@ export default function App() {
 
       <main className="layout">
         <div className="left">
-          <PeriodicTable selectedId={selectedElementId} onSelect={setSelectedElementId} />
+          <PeriodicTable
+            selectedId={selectedElementId}
+            onSelect={handleTableAction}
+            showMore={showMore}
+            colorOn={colorOn}
+            visualizeBy={visualizeBy}
+          />
           <ElementCard element={selectedElement} onChoose={() => setInquiryElementId(selectedElement.atomicNumber)} />
+          <div className="post-table">
+            <button className="ghost small" onClick={() => setShowConcepts((p) => !p)}>
+              필수 내용 복습!
+            </button>
+          </div>
+          <BasicConceptsPanel open={showConcepts} onClose={() => setShowConcepts(false)} />
         </div>
         <div className="right">
           <ChatbotPanel
