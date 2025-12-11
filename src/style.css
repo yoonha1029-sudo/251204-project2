@@ -280,12 +280,15 @@ a.ghost {
 .table-wrapper {
   margin-top: 10px;
   display: grid;
-  grid-template-columns: 44px repeat(18, minmax(32px, 1fr));
-  grid-template-rows: 32px repeat(7, minmax(60px, auto));
+  /* 0번째 컬럼(주기 라벨) 44px, 나머지 18칸은 44px 고정 */
+  grid-template-columns: 44px repeat(18, 44px);
+  /* 0번째 행(족 라벨) 32px, 나머지 7행은 44px 고정 */
+  grid-template-rows: 44px repeat(7, 60px);
   gap: 6px;
   align-items: center;
 }
 
+/* 그룹/주기 라벨은 그대로 사용 */
 .group-label,
 .period-label {
   font-size: 12px;
@@ -301,29 +304,35 @@ a.ghost {
   background: #f8fafc;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 6px;
+  padding: 4px 4px 6px;
   text-align: left;
   color: #111827;
   position: relative;
-  min-height: 70px;
+  /* 높이는 grid-template-rows로 관리하므로 최소값 제거 */
+  min-height: 0;
   transition: transform 120ms ease, box-shadow 120ms ease, border 120ms ease;
 }
 
 .cell .number {
-  font-size: 11px;
+  font-size: 10px;
   color: #6b7280;
 }
 
 .cell .symbol {
   display: block;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
+  line-height: 1.1;
 }
 
 .cell .name {
-  font-size: 12px;
+  font-size: 11px;
   color: #4b5563;
+  line-height: 1.25;
+  white-space: normal;  /* 줄바꿈 허용 */
+  word-break: keep-all; /* 한글 단어 기준으로 줄바꿈 */
 }
+
 
 .cell:hover {
   transform: translateY(-2px);
@@ -507,19 +516,18 @@ a.ghost {
   color: #9a3412;
 }
 
-@media (max-width: 1000px) {
-  .layout {
-    grid-template-columns: 1fr;
+@media (max-width: 720px) {
+  .table-wrapper {
+    grid-template-columns: 32px repeat(18, minmax(36px, 1fr));
+    overflow-x: auto;
+    padding-bottom: 6px;
   }
 
-  .right {
-    order: 2;
-  }
-
-  .left {
-    order: 1;
+  .chatbot .chat-window {
+    height: 220px;
   }
 }
+
 
 @media (max-width: 720px) {
   .table-wrapper {

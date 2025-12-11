@@ -65,19 +65,19 @@ export default function PeriodicTable({
             <input type="checkbox" checked={colorOn} onChange={(e) => onSelect('toggle-color', e.target.checked)} />
             <span className="slider" />
           </label>
-          <span>색상 코딩</span>
+          <span>색상 켜기</span>
         </div>
         <div className="control-chip">
-          <label htmlFor="visualize-select">Visualize by</label>
+          <label htmlFor="visualize-select">이 기준으로 색상 켜기</label>
           <select
             id="visualize-select"
             value={visualizeBy}
             onChange={(e) => onSelect('visualize', e.target.value)}
           >
-            <option value="">없음</option>
-            <option value="radius">Atomic Radius</option>
-            <option value="electronegativity">Electronegativity</option>
-            <option value="type">Element Type</option>
+            <option value="">선택 안함</option>
+            <option value="radius">원자반지름</option>
+            <option value="electronegativity">전자쌍을 잡아당기는 정도</option>
+            <option value="type">분류</option>
           </select>
         </div>
         <button className="ghost small" onClick={() => onSelect('toggle-more')}>
