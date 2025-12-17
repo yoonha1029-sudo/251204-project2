@@ -2,7 +2,7 @@ import React from 'react'
 import elements from '../data/elements'
 
 const groups = Array.from({ length: 18 }, (_, i) => i + 1)
-const periods = Array.from({ length: 7 }, (_, i) => i + 1)
+const periods = Array.from({ length: 4 }, (_, i) => i + 1)
 
 const categoryColors = {
   metal: '#e0ecff',
@@ -12,40 +12,21 @@ const categoryColors = {
   default: '#f8fafc',
 }
 
-const shadeByValue = (value, min, max, base = '#e5e7eb') => {
-  if (value === null || value === undefined) return base
-  const clamped = Math.max(min, Math.min(max, value))
-  const ratio = (clamped - min) / (max - min || 1)
-  const light = 240 - Math.round(ratio * 70)
-  return `hsl(220, 25%, ${light}%)`
-}
 
 export default function PeriodicTable({
   selectedId,
   onSelect,
-  showMore,
   colorOn,
-  visualizeBy,
 }) {
-  const visibleElements = elements.filter((el) => showMore || el.atomicNumber <= 20)
+  const visibleElements = elements.filter((el) => el.atomicNumber <= 20)
 
   const getCellStyle = (el) => {
     const style = { gridColumn: el.group + 1, gridRow: el.period + 1 }
 
-    if (visualizeBy === 'radius') {
-      style.background = shadeByValue(el.radius, 50, 250)
-    } else if (visualizeBy === 'electronegativity') {
-      style.background = shadeByValue(el.electronegativity ?? 1, 0.7, 4)
-    } else if (visualizeBy === 'type') {
-      style.background = categoryColors[el.category] || categoryColors.default
-    } else if (colorOn) {
+    if (colorOn) {
       style.background = categoryColors[el.category] || categoryColors.default
     }
 
-    if (el.atomicNumber > 20) {
-      style.borderStyle = 'dashed'
-      style.opacity = 0.92
-    }
     return style
   }
 
@@ -65,24 +46,8 @@ export default function PeriodicTable({
             <input type="checkbox" checked={colorOn} onChange={(e) => onSelect('toggle-color', e.target.checked)} />
             <span className="slider" />
           </label>
-          <span>색상 켜기</span>
+          <span>족/분류 보기</span>
         </div>
-        <div className="control-chip">
-          <label htmlFor="visualize-select">이 기준으로 색상 켜기</label>
-          <select
-            id="visualize-select"
-            value={visualizeBy}
-            onChange={(e) => onSelect('visualize', e.target.value)}
-          >
-            <option value="">선택 안함</option>
-            <option value="radius">원자반지름</option>
-            <option value="electronegativity">전자쌍을 잡아당기는 정도</option>
-            <option value="type">분류</option>
-          </select>
-        </div>
-        <button className="ghost small" onClick={() => onSelect('toggle-more')}>
-          더 많은 원소 보기 / 왜 이런 모양일까?
-        </button>
       </div>
 
       <div className="table-wrapper">
@@ -100,7 +65,7 @@ export default function PeriodicTable({
         {visibleElements.map((el) => (
           <button
             key={el.atomicNumber}
-            className={`cell ${selectedId === el.atomicNumber ? 'active' : ''} ${el.atomicNumber > 20 ? 'extra' : ''}`}
+            className={`cell ${selectedId === el.atomicNumber ? 'active' : ''}`}
             style={getCellStyle(el)}
             onClick={() => onSelect(el.atomicNumber)}
             aria-label={`${el.koreanName} 선택`}

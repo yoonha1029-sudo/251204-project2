@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function ElementCard({ element, onChoose }) {
+export default function ElementCard({ element, onChoose, onNextStep }) {
   const wikiUrl = `https://ko.wikipedia.org/wiki/${encodeURIComponent(element.koreanName)}`
 
   return (
@@ -15,6 +15,12 @@ export default function ElementCard({ element, onChoose }) {
         <span className="tag">족 {element.group} · 주기 {element.period}</span>
       </div>
       <p className="summary">{element.summary}</p>
+      {element.funFact && (
+        <div className="fun-fact">
+          <span className="fun-fact-icon">💡</span>
+          <p className="fun-fact-text">{element.funFact}</p>
+        </div>
+      )}
       <div className="detail-grid">
         <div>
           <p className="label">기호</p>
@@ -39,9 +45,16 @@ export default function ElementCard({ element, onChoose }) {
         <a className="ghost" href={wikiUrl} target="_blank" rel="noreferrer">
           더 알아보기 (위키)
         </a>
-        <button className="primary" onClick={onChoose}>
-          이 원소로 탐구하기
-        </button>
+        {onNextStep && (
+          <button className="primary" onClick={onNextStep}>
+            이 원소로 챗봇 질문하기
+          </button>
+        )}
+        {!onNextStep && (
+          <button className="primary" onClick={onChoose}>
+            이 원소로 탐구하기
+          </button>
+        )}
       </div>
     </div>
   )

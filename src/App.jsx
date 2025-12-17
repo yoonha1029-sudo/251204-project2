@@ -24,15 +24,21 @@ const googleFormFieldIds = {
 
 export default function App() {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY || ''
-  const [showMore, setShowMore] = useState(false)
+  const [step, setStep] = useState('explore') // 'explore' | 'chat' | 'card'
   const [colorOn, setColorOn] = useState(false)
-  const [visualizeBy, setVisualizeBy] = useState('')
   const [showConcepts, setShowConcepts] = useState(false)
 
   const [selectedElementId, setSelectedElementId] = useState(elements[0].atomicNumber)
   const selectedElement = useMemo(
     () => elements.find((el) => el.atomicNumber === selectedElementId) || elements[0],
     [selectedElementId]
+  )
+
+  // Step 2에서 사용할 선택된 원소 (챗봇 컨텍스트용)
+  const [chatSelectedElementId, setChatSelectedElementId] = useState(elements[0].atomicNumber)
+  const chatSelectedElement = useMemo(
+    () => elements.find((el) => el.atomicNumber === chatSelectedElementId) || elements[0],
+    [chatSelectedElementId]
   )
 
   const [inquiryElementId, setInquiryElementId] = useState(elements[0].atomicNumber)
@@ -100,9 +106,11 @@ export default function App() {
 
     setIsLoading(true)
     try {
+      // chatSelectedElementId 사용 (Step 2에서 선택된 원소)
+      const elementToUse = chatSelectedElement
       const elementContext = {
         role: 'system',
-        content: `현재 선택된 원소 정보: ${selectedElement.koreanName} (${selectedElement.symbol}), 원자번호 ${selectedElement.atomicNumber}, 족 ${selectedElement.group}, 주기 ${selectedElement.period}. 관련된 설명이나 비교 시 참고해.`,
+        content: `현재 선택된 원소 정보: ${elementToUse.koreanName} (${elementToUse.symbol}), 원자번호 ${elementToUse.atomicNumber}, 족 ${elementToUse.group}, 주기 ${elementToUse.period}. 관련된 설명이나 비교 시 참고해.`,
       }
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -180,14 +188,6 @@ export default function App() {
       setColorOn(payload)
       return
     }
-    if (value === 'visualize') {
-      setVisualizeBy(payload)
-      return
-    }
-    if (value === 'toggle-more') {
-      setShowMore((prev) => !prev)
-      return
-    }
     if (typeof value === 'number') {
       setSelectedElementId(value)
     }
@@ -206,40 +206,92 @@ export default function App() {
         </div>
       </header>
 
-      <main className="layout">
-        <div className="left">
-          <PeriodicTable
-            selectedId={selectedElementId}
-            onSelect={handleTableAction}
-            showMore={showMore}
-            colorOn={colorOn}
-            visualizeBy={visualizeBy}
-          />
-          <ElementCard element={selectedElement} onChoose={() => setInquiryElementId(selectedElement.atomicNumber)} />
-          <div className="post-table">
-            <button className="ghost small" onClick={() => setShowConcepts((p) => !p)}>
-              필수 내용 복습!
-            </button>
+      <div className="stepper">
+        <button
+          className={`step-button ${step === 'explore' ? 'active' : ''}`}
+          onClick={() => setStep('explore')}
+        >
+          1단계: 주기율표 탐색
+        </button>
+        <button
+          className={`step-button ${step === 'chat' ? 'active' : ''}`}
+          onClick={() => setStep('chat')}
+        >
+          2단계: 원소 챗봇
+        </button>
+        <button
+          className={`step-button ${step === 'card' ? 'active' : ''}`}
+          onClick={() => setStep('card')}
+        >
+          3단계: 탐구 카드
+        </button>
+      </div>
+
+      <main className={step === 'explore' ? 'layout-explore' : 'layout-single'}>
+        {step === 'explore' && (
+          <div className="explore-layout">
+            <div className="explore-left">
+              <PeriodicTable
+                selectedId={selectedElementId}
+                onSelect={handleTableAction}
+                colorOn={colorOn}
+              />
+              <div className="post-table">
+                <button className="ghost small" onClick={() => setShowConcepts((p) => !p)}>
+                  필수 내용 복습!
+                </button>
+              </div>
+              <BasicConceptsPanel open={showConcepts} onClose={() => setShowConcepts(false)} />
+            </div>
+            <div className="explore-right">
+              <ElementCard
+                element={selectedElement}
+                onChoose={() => {
+                  setInquiryElementId(selectedElement.atomicNumber)
+                  setSelectedElementId(selectedElement.atomicNumber)
+                }}
+                onNextStep={() => {
+                  setChatSelectedElementId(selectedElement.atomicNumber)
+                  setStep('chat')
+                }}
+              />
+            </div>
           </div>
-          <BasicConceptsPanel open={showConcepts} onClose={() => setShowConcepts(false)} />
-        </div>
-        <div className="right">
-          <ChatbotPanel
-            messages={chatHistory}
-            userInput={userInput}
-            onInput={setUserInput}
-            onSend={handleSend}
-            isLoading={isLoading}
-            apiKeyPresent={Boolean(apiKey)}
-          />
-          <InquiryForm
-            element={inquiryElement}
-            values={cardValues}
-            onChange={setCardValues}
-            onSubmit={handleSubmitCard}
-            submitting={isSubmitting}
-          />
-        </div>
+        )}
+
+        {step === 'chat' && (
+          <div className="step-content">
+            <ChatbotPanel
+              messages={chatHistory}
+              userInput={userInput}
+              onInput={setUserInput}
+              onSend={handleSend}
+              isLoading={isLoading}
+              apiKeyPresent={Boolean(apiKey)}
+              selectedElementId={chatSelectedElementId}
+              onElementSelect={(id) => {
+                setChatSelectedElementId(id)
+                setSelectedElementId(id)
+              }}
+              onNextStep={() => {
+                setInquiryElementId(chatSelectedElementId)
+                setStep('card')
+              }}
+            />
+          </div>
+        )}
+
+        {step === 'card' && (
+          <div className="step-content">
+            <InquiryForm
+              element={inquiryElement}
+              values={cardValues}
+              onChange={setCardValues}
+              onSubmit={handleSubmitCard}
+              submitting={isSubmitting}
+            />
+          </div>
+        )}
       </main>
       {toast.message && (
         <div className={`toast ${toast.type}`}>
