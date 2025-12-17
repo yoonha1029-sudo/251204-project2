@@ -18,10 +18,10 @@ export default function ChatbotPanel({
   const selectedElement = elements.find((el) => el.atomicNumber === selectedElementId) || elements[0]
 
   const exampleQuestions = [
-    '이 원소의 특징은?',
-    '같은 족 원소는 뭐가 비슷해?',
-    '우리가 어디에서 이 원소를 볼 수 있어?',
-    '어떤 곳에 쓰여?',
+    '우리 주변에서 이 원소가 사용되는 대표적인 사례는 무엇인가요?',
+    '이 원소와 성질이 비슷한 같은 족 원소들은 어떤 특징을 공유하나요?',
+    '이 원소의 이름은 어떤 의미나 유래를 담고 있나요?',
+    '이 원소가 우리 몸이나 자연에서 어떤 역할을 하나요?',
   ]
 
   const handleExampleClick = (question) => {
