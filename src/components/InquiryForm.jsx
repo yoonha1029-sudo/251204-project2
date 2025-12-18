@@ -16,9 +16,30 @@ function SketchCanvas() {
     ctx.lineJoin = 'round'
 
     const resizeCanvas = () => {
+      const canvas = canvasRef.current
+      if (!canvas) return
+
+      const ctx = canvas.getContext('2d')
       const rect = canvas.getBoundingClientRect()
-      canvas.width = rect.width
-      canvas.height = rect.height
+      const dpr = window.devicePixelRatio || 1
+
+      // CSS 크기
+      const cssW = rect.width
+      const cssH = rect.height
+
+      // 내부 버퍼 크기 (DPR 반영)
+      canvas.width = Math.round(cssW * dpr)
+      canvas.height = Math.round(cssH * dpr)
+
+      // 좌표계 리셋 후 스케일 적용
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.scale(dpr, dpr)
+
+      // 선 스타일은 리사이즈 후 다시 세팅
+      ctx.strokeStyle = '#000000'
+      ctx.lineWidth = 2
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
     }
 
     resizeCanvas()
@@ -29,14 +50,8 @@ function SketchCanvas() {
   const getPoint = (e) => {
     const canvas = canvasRef.current
     if (!canvas) return null
-
     const rect = canvas.getBoundingClientRect()
-    if (e.touches && e.touches.length > 0) {
-      return {
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top,
-      }
-    }
+  
     return {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
@@ -45,9 +60,11 @@ function SketchCanvas() {
 
   const startDrawing = (e) => {
     e.preventDefault()
+    e.currentTarget.setPointerCapture?.(e.pointerId)
+  
     const point = getPoint(e)
     if (!point) return
-
+  
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
     ctx.beginPath()
@@ -78,14 +95,11 @@ function SketchCanvas() {
       id="sketch-canvas"
       ref={canvasRef}
       className="sketch-canvas"
-      onMouseDown={startDrawing}
-      onMouseMove={draw}
-      onMouseUp={stopDrawing}
-      onMouseLeave={stopDrawing}
-      onTouchStart={startDrawing}
-      onTouchMove={draw}
-      onTouchEnd={stopDrawing}
-      style={{ touchAction: 'none' }}
+      onPointerDown={startDrawing}
+      onPointerMove={draw}
+      onPointerUp={stopDrawing}
+      onPointerLeave={stopDrawing}
+      style={{ touchAction: 'none' }} 
     />
   )
 }
@@ -287,6 +301,21 @@ export default function InquiryForm({ element, values, onChange, onSubmit, submi
             <div className="preview-footer">
               <span>작성자: {values.studentName || '(이름)'} ({values.studentId || '학번'})</span>
             </div>
+          </div>
+          <div className="preview-next-activity">
+            <p className="preview-next-activity-text">
+            다음 시간에는 원소의 특징을 살린 ‘원소 기호 타이포그래피 카드’를 만듭니다.
+            <br />
+            위 그림/디자인 연습 영역에서 원소의 성질을 어떤 이미지로 표현할지 미리 구상해 보세요.
+            </p>
+            <a
+              href="https://www.google.com/search?tbm=isch&q=%ED%83%80%EC%9D%B4%ED%8F%AC%EA%B7%B8%EB%9E%98%ED%94%BC"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ghost"
+            >
+              다음 시간 활동 미리보기 · 타이포그래피란?
+            </a>
           </div>
         </div>
       </div>

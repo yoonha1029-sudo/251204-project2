@@ -825,8 +825,8 @@ a.ghost {
 /* Card Layout */
 .card-layout {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr; /* 비율로 */
-  gap: 20px; /* 24 -> 20으로 살짝 */
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 20px;
   align-items: start;
 }
 
@@ -838,6 +838,7 @@ a.ghost {
 
 .card-preview-section {
   position: static;
+  min-width: 0;
 }
 
 .preview-panel {
@@ -865,6 +866,8 @@ a.ghost {
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  min-width: 0;
+  overflow: hidden; /* 카드 밖으로 삐져나오는 요소 예방 */
 }
 
 .preview-header {
@@ -917,6 +920,10 @@ a.ghost {
   font-size: 13px;
   line-height: 1.5;
   min-height: 20px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap; /* 사용자가 줄바꿈 넣으면 유지 */
+  max-width: 100%;
 }
 
 .preview-sketch-area {
@@ -963,6 +970,28 @@ a.ghost {
   text-align: right;
 }
 
+.preview-next-activity {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px dashed #e5e7eb; 
+}
+
+.preview-next-activity-text {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #374151;
+  white-space: pre-line;
+}
+
+.preview-next-activity .ghost {
+  display: inline-block;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
 .toast-message {
   position: fixed;
   top: 20px;
@@ -1006,6 +1035,7 @@ a.ghost {
   .chatbot-left,
   .card-preview-section {
     position: static;
+    min-width: 0;
   }
 
   .chatbot-layout,
