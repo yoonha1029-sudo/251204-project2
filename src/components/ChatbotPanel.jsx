@@ -73,7 +73,7 @@ export default function ChatbotPanel({
             ))}
             {isLoading && (
               <div className="bubble assistant">
-                <p>생각 중... 🚀</p>
+                <p>생각 중... </p>
               </div>
             )}
           </div>
