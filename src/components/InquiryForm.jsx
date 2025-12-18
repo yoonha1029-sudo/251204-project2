@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react'
+import { toPng } from 'html-to-image'
 
 function SketchCanvas() {
   const canvasRef = useRef(null)
@@ -90,12 +91,54 @@ function SketchCanvas() {
 }
 
 export default function InquiryForm({ element, values, onChange, onSubmit, submitting }) {
+  const previewCardRef = useRef(null)
+  const [toastMessage, setToastMessage] = useState('')
+  
   const isTransition = element.group >= 3 && element.group <= 12
   const guidanceText = isTransition
     ? 'Focus on simple visible properties such as common uses, appearance, or general stability. Deep atomic theory is NOT required.'
     : ''
 
   const elementName = values.elementName || `${element.koreanName} (${element.symbol})`
+
+  const handleSaveCard = async () => {
+    if (!previewCardRef.current) return
+
+    try {
+      const dataUrl = await toPng(previewCardRef.current, {
+        backgroundColor: '#ffffff',
+        quality: 1.0,
+        pixelRatio: 2,
+        cacheBust: true,
+        includeQueryParams: false,
+      })
+
+      // 파일명 생성: elementSymbol_elementName_studentId_studentName.png
+      const symbol = element.symbol
+      const name = elementName.replace(/\s*\([^)]*\)\s*/g, '').trim() || element.koreanName
+      const studentId = values.studentId || '학번'
+      const studentName = values.studentName || '이름'
+      
+      // 파일명에 사용할 수 없는 문자 제거
+      const sanitizeFileName = (str) => str.replace(/[<>:"/\\|?*]/g, '_')
+      const fileName = `${sanitizeFileName(symbol)}_${sanitizeFileName(name)}_${sanitizeFileName(studentId)}_${sanitizeFileName(studentName)}.png`
+
+      // 다운로드
+      const link = document.createElement('a')
+      link.download = fileName
+      link.href = dataUrl
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      setToastMessage('이미지로 저장했어요!')
+      setTimeout(() => setToastMessage(''), 2200)
+    } catch (error) {
+      console.error('카드 저장 실패:', error)
+      setToastMessage(`저장 중 오류가 발생했어요: ${error.message || '알 수 없는 오류'}`)
+      setTimeout(() => setToastMessage(''), 3000)
+    }
+  }
 
   return (
     <div className="card-layout">
@@ -189,8 +232,21 @@ export default function InquiryForm({ element, values, onChange, onSubmit, submi
               <p className="eyebrow">미리보기</p>
               <h2>내 카드 미리보기</h2>
             </div>
+            <button
+              type="button"
+              className="primary small"
+              onClick={handleSaveCard}
+              disabled={submitting}
+            >
+              카드 저장(PNG)
+            </button>
           </div>
-          <div className="preview-card">
+          {toastMessage && (
+            <div className="toast-message">
+              {toastMessage}
+            </div>
+          )}
+          <div className="preview-card" ref={previewCardRef}>
             <div className="preview-header">
               <h4>{elementName}</h4>
               <span className="preview-tag">{element.group}족 · {element.period}주기</span>

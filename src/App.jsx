@@ -57,7 +57,7 @@ export default function App() {
     } catch (e) {
       console.warn('chatHistory 복원 실패', e)
     }
-    return [{ role: 'assistant', content: '안녕하세요, 여러분의 원소 탐구를 돕기 위해 기다리고 있었습니다. 주기율표에서 원하는 원소를 선택해 대화를 시작해 보세요. 원소들 사이의 숨겨진 관계나 흥미로운 쓰임새를 함께 찾아볼까요?' }]
+    return [{ role: 'assistant', content: '안녕하세요. 주기율표에서 궁금한 원소를 클릭해보세요. 원소가 우리 생활 어디에 쓰이는지, 어떤 비밀이 있는지 알아보아요.' }]
   }, [])
 
   const [chatHistory, setChatHistory] = useState(initialChats)

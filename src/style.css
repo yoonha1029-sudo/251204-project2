@@ -189,10 +189,10 @@ h1 {
 
 .panel {
   background: #ffffff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #dbe2ea;
   border-radius: 16px;
   padding: 18px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
 }
 
 .panel-header {
@@ -201,7 +201,7 @@ h1 {
   justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .panel h2 {
@@ -301,7 +301,7 @@ a.ghost {
 .primary {
   background: var(--primary-color);
   color: #ffffff;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-radius: 12px;
   font-weight: 700;
   border: 1px solid var(--primary-hover);
@@ -315,6 +315,11 @@ a.ghost {
 
 .primary.full {
   width: 100%;
+}
+
+.primary.small {
+  padding: 8px 14px;
+  font-size: 13px;
 }
 
 .ghost {
@@ -335,7 +340,7 @@ a.ghost {
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
-  margin: 8px 0 12px;
+  margin: 6px 0 10px;
 }
 
 .control-chip {
@@ -447,8 +452,9 @@ a.ghost {
   transition: transform 120ms ease, box-shadow 120ms ease, border 120ms ease;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
+  justify-content: center; /* 세로 방향 가운데 정렬 */
+  align-items: center;     /* 가로 방향 가운데 정렬 */
+  text-align: center;      /* 텍스트 자체를 가운데로 */
   width: 100%;
   height: 100%;
 }
@@ -471,7 +477,7 @@ a.ghost {
 .cell .name {
   font-size: 12px;
   color: #4b5563;
-  line-height: 1.3;
+  line-height: 1.2;
   white-space: normal;
   word-break: keep-all;
   display: -webkit-box;
@@ -499,7 +505,7 @@ a.ghost {
 
 .chatbot-layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 300px 1fr;
   gap: 24px;
   align-items: start;
 }
@@ -518,7 +524,7 @@ a.ghost {
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 16px;
-  height: 480px;
+  height: 560px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -554,11 +560,11 @@ a.ghost {
 
 .chat-input input {
   flex: 1;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid #d1d5db;
   background: #fff;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .chat-input input:focus {
@@ -819,8 +825,8 @@ a.ghost {
 /* Card Layout */
 .card-layout {
   display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: 24px;
+  grid-template-columns: 1.2fr 0.8fr; /* 비율로 */
+  gap: 20px; /* 24 -> 20으로 살짝 */
   align-items: start;
 }
 
@@ -831,8 +837,7 @@ a.ghost {
 }
 
 .card-preview-section {
-  position: sticky;
-  top: 20px;
+  position: static;
 }
 
 .preview-panel {
@@ -855,7 +860,7 @@ a.ghost {
 }
 
 .preview-card {
-  background: #ffffff;
+  background: #fafafa;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 16px;
@@ -905,11 +910,11 @@ a.ghost {
 
 .preview-field p {
   margin: 0;
-  padding: 8px 12px;
+  padding: 6px 10px;
   background: #f8fafc;
   border-radius: 8px;
   color: #111827;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.5;
   min-height: 20px;
 }
@@ -936,7 +941,7 @@ a.ghost {
 
 .sketch-canvas {
   width: 100%;
-  height: 200px;
+  height: 180px;
   background: #ffffff;
   border: 2px solid #d1d5db;
   border-radius: 8px;
@@ -956,6 +961,32 @@ a.ghost {
   font-size: 12px;
   color: #6b7280;
   text-align: right;
+}
+
+.toast-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #2563eb;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  font-size: 14px;
+  font-weight: 500;
+  animation: toastSlideIn 0.3s ease-out;
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @media (max-width: 900px) {
@@ -1014,19 +1045,11 @@ a.ghost {
     height: 300px;
   }
 
-  .stepper {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .step-button {
-    width: 100%;
-    text-align: left;
-  }
-
-  .step-button.active::after {
-    display: none;
-  }
+  .stepper { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 8px; }
+  .step-button { flex: 1; text-align: center; }
+  .step-button.active { background: var(--primary-light); }
+  .step-button.active::after { display: none; }
+  .step-button:hover { background: #f8fafc; }
 
   .chatbot-layout {
     grid-template-columns: 1fr;

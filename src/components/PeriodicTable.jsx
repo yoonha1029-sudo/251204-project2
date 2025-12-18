@@ -46,7 +46,7 @@ export default function PeriodicTable({
             <input type="checkbox" checked={colorOn} onChange={(e) => onSelect('toggle-color', e.target.checked)} />
             <span className="slider" />
           </label>
-          <span>족/분류 보기</span>
+          <span>원소 분류 보기</span>
         </div>
       </div>
 
